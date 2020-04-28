@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("lesson.org"
+(("config"
+ (filename . "~/.emacs.d/config.org")
+ (front-context-string . "#+TITLE: My Emac")
+ (rear-context-string)
+ (position . 1))
+("lesson.org"
  (filename . "~/org-notes/lesson.org")
  (front-context-string)
  (rear-context-string . "ont_do_you_use/\n")
