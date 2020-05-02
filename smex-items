@@ -1,13 +1,13 @@
 
 ;; ----- smex-history -----
 (
+ insert-kbd-macro
+ name-last-kbd-macro
  eval-buffer
  other-window
  switch-window
  cd
  5x5
- arp
- dbx
 )
 
 ;; ----- smex-data -----
@@ -15,4 +15,7 @@
  (eval-buffer . 4)
  (switch-window . 2)
  (other-window . 1)
+ (insert-kbd-macro . 2)
+ (name-last-kbd-macro . 1)
+ (bullet-list . 1)
 )

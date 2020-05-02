@@ -234,3 +234,13 @@
 (use-package symon
   :ensure t
   :bind ("C-c p" . 'symon-mode))
+
+(use-package popup-kill-ring
+  :ensure t
+  :bind ("M-y" . popup-kill-ring))
+
+(use-package swiper 
+    :ensure t
+    :bind ("C-s" . swiper))
+(setq swiper-use-visual-line nil)
+(setq swiper-use-visual-line-p (lambda (a) nil))
