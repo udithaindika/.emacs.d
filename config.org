@@ -1,9 +1,10 @@
 #+TITLE: My Emacs Config File
 #+CREATOR: U<
 #+STARTUP: overview
+#+Credits: This Emacs Config is Based on the Uncle Dave's Tutorial
 
 * Constants
-
+  
 #+BEGIN_SRC emacs-lisp
   (defconst sys/win32p
     (eq system-type 'windows-nt)
@@ -19,6 +20,37 @@
 #+END_SRC
 
 * Default Settings
+** show lines and columns on the modeline
+#+BEGIN_SRC emacs-lisp
+(line-number-mode 1)
+(column-number-mode 1)
+#+END_SRC
+
+** Subword
+#+BEGIN_SRC emacs-lisp
+(global-subword-mode 1)
+#+END_SRC
+** Electric Mode
+#+BEGIN_SRC emacs-lisp
+
+  (setq electric-pair-pairs '(
+			      (?\( . ?\))
+			      (?\[ . ?\])
+			      (?\{ . ?\})
+			      ))
+  (electric-pair-mode 1)
+
+
+
+
+#+END_SRC
+** Set Time
+#+BEGIN_SRC emacs-lisp
+(setq display-time-24hr-format t)
+(display-time-mode 1)
+
+#+END_SRC
+** Settings
 #+BEGIN_SRC emacs-lisp
   (tool-bar-mode -1)
   (menu-bar-mode -1)
@@ -49,16 +81,10 @@
 
   (global-display-line-numbers-mode)
   (fset 'yes-or-no-p 'y-or-n-p)
-
-  (substitute-key-definition 'kill-buffer
-			     'kill-buffer-and-window
-			     global-map)
-
-
 #+END_SRC
 
 * Terminal
-
+  
 #+BEGIN_SRC emacs-lisp
 
   (defvar my-term-shell "/bin/bash")
@@ -89,6 +115,14 @@
 #+END_SRC
 
 * Org mode
+** Basic Settings
+#+BEGIN_SRC emacs-lisp
+(setq org-src-window-setup 'current-window)
+(add-to-list 'org-structure-template-alist 
+'("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+
+#+END_SRC
+** Formattings
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :ensure t
@@ -146,6 +180,12 @@
 
 #+END_SRC
 
+* Hungry Delete
+#+BEGIN_SRC emacs-lisp
+  (use-package hungry-delete
+    :ensure t
+    :config (global-hungry-delete-mode t))
+#+END_SRC
 * Beacon
 #+BEGIN_SRC emacs-lisp
   (use-package beacon
@@ -154,6 +194,16 @@
 
 #+END_SRC
 * Util Functions
+** Kill Word
+#+BEGIN_SRC emacs-lisp
+  (defun kill-whole-word ()
+    (interactive)
+    (backward-word)
+    (kill-word 1))
+
+  (global-set-key (kbd "C-c w w") 'kill-whole-word)
+#+END_SRC
+** Open my init file in another window
 #+BEGIN_SRC emacs-lisp
 
 (defun my-open-init-file ()
@@ -161,10 +211,141 @@
   (interactive)
   (find-file-other-window user-init-file))
 
+#+END_SRC
+** Copy whole line
+#+BEGIN_SRC emacs-lisp
+  (defun copy-whole-line()
+    (interactive)
+    (save-excursion (kill-new
+		     (buffer-substring (point-at-bol)
+				       (point-at-eol)))))
 
+  (global-set-key (kbd "C-c w l") 'copy-whole-line)
+#+END_SRC
+* Cofig edit/reload
+#+BEGIN_SRC emacs-lisp
+  (defun config-visit ()
+    (interactive)
+    (find-file "~/.emacs.d/config.org"))
+  (global-set-key (kbd "C-c e") 'config-visit)
+
+  (defun config-reload ()
+    (interactive)
+    (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
+  (global-set-key (kbd "C-c r") 'config-reload)
 #+END_SRC
 * Buffers
+** map the Defaulk Buffer kill
+#+BEGIN_SRC emacs-lisp
+
+  (substitute-key-definition 'kill-buffer
+			     'kill-buffer-and-window
+			     global-map)
+
+
+
+#+END_SRC
+** Use the Ibuffer instead of the default buffer
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x C-b") 'ibuffer)
 
 #+END_SRC
+** Kill all buufers
+#+BEGIN_SRC emacs-lisp
+  (defun kill-all-buffers ()
+    (interactive)
+    (mapc 'kill-buffer (buffer-list)))
+  (global-set-key (kbd "C-c k k") 'kill-all-buffers)
+#+END_SRC
+* Avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind ("M-s" . avy-goto-char))
+
+#+END_SRC
+* Rainbow Delimer
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :init (rainbow-delimiters-mode 1))
+#+END_SRC
+* Switch-Winow
+#+BEGIN_SRC emacs-lisp
+  (use-package switch-window
+    :ensure t
+    :config
+    (setq switch-window-input-style 'minibuffer)
+    (setq switch-window-increase 4)
+    (setq switch-window-threshold 2)
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts '("a" "s" "d" "f" "h" "j" "k" "l"))
+    :bind ([remap other-window] . switch-window))
+#+END_SRC
+* Window Splitting function
+#+BEGIN_SRC emacs-lisp
+  (defun split-and-follow-horizontally()
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+
+  (defun split-and-follow-vertically()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+#+END_SRC
+* Dashboard
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :config
+    (dashboard-setup-startup-hook)
+    (setq dashboard-items '((recents . 10)))
+    (setq dashboard-banner-logo-title "Hello World!"))
+
+#+END_SRC
+* Auto Completion
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :init
+    (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
+* Modeline
+** Spaceline
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+    :ensure t
+    :config
+    (require 'spaceline-config)
+    (setq powerline-default-separator (quote arrow))
+    (spaceline-spacemacs-theme))
+#+END_SRC
+** Diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish
+    :ensure t
+    :init
+    (diminish 'hungry-delete-mode)
+    (diminish 'beacon-mode)
+    (diminish 'which-key-mode)
+    (diminish 'subword-mode))
+#+END_SRC
+* Dmenu
+#+BEGIN_SRC emacs-lisp
+  (use-package dmenu
+    :ensure t
+    :bind
+    ("C-c d" . dmenu))  
+#+END_SRC
+* Symon- A performance manager
+#+BEGIN_SRC emacs-lisp
+  (use-package symon
+    :ensure t
+    :bind ("C-c p" . 'symon-mode))
+#+END_SRC
+
