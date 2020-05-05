@@ -25,35 +25,38 @@
 (setq display-time-24hr-format t)
 (display-time-mode 1)
 
+;; This is gonna speed up the keyboard scrolling - https://lists.gnu.org/archive/html/emacs-devel/2006-09/msg00814.html
+(setq auto-window-vscroll nil)  
+
 (tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(setq inhibit-startup-message t)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq inhibit-startup-message t)
 
-(setq default-directory "~/")
+  (setq default-directory "~/")
 
-;;Fuck that bell
-(setq ring-bell-function 'ignore)
+  ;;Fuck that bell
+  (setq ring-bell-function 'ignore)
 
-(prefer-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8-unix)
-(set-terminal-coding-system 'utf-8)
-(set-language-environment 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
-(setq locale-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (setq-default buffer-file-coding-system 'utf-8-unix)
+  (set-terminal-coding-system 'utf-8)
+  (set-language-environment 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
 
-(setq visible-bell t)
-(setq make-backup-file nil)
-(setq auto-save-default nil)
+  (setq visible-bell t)
+  (setq make-backup-file nil)
+  (setq auto-save-default nil)
 
-(when window-system (global-hl-line-mode t))
-(when window-system (global-prettify-symbols-mode t))
+  (when window-system (global-hl-line-mode t))
+  (when window-system (global-prettify-symbols-mode t))
 
-(global-display-line-numbers-mode)
-(fset 'yes-or-no-p 'y-or-n-p)
+  (global-display-line-numbers-mode)
+  (fset 'yes-or-no-p 'y-or-n-p)
 
 (defvar my-term-shell "/bin/bash")
 (when sys/linuxp (setq my-term-shell "/bin/bash"))
@@ -96,7 +99,9 @@
 ;; Key Binding
 (global-set-key (kbd "C-c I") #'my-find-user-init-file)
 
-(setq ido-enable-flex-matching nil)
+(add-hook 'org-mode-hook 'org-indent-mode)
+
+(setq ido-enable-flex-matching t)
 (setq ido-create-new-buffer 'always)
 (setq ido-everywhere t)
 (ido-mode 1)
@@ -173,7 +178,7 @@
 
 (use-package rainbow-delimiters
   :ensure t
-  :init (rainbow-delimiters-mode 1))
+  :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
 (use-package switch-window
   :ensure t
@@ -203,13 +208,25 @@
   :ensure t
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-items '((recents . 10)))
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (agenda . 5)
+                          (registers . 5)))
   (setq dashboard-banner-logo-title "Hello World!"))
 
 (use-package company
   :ensure t
   :init
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 2)
   (add-hook 'after-init-hook 'global-company-mode))
+
+(with-eval-after-load 'company
+  (define-key company-active-map(kbd "M-n") nil)
+  (define-key company-active-map(kbd "M-p") nil)
+  (define-key company-active-map(kbd "C-n") #'company-select-next)
+  (define-key company-active-map(kbd "C-p") #'company-select-previous))
 
 (use-package spaceline
     :ensure t
@@ -242,5 +259,62 @@
 (use-package swiper 
     :ensure t
     :bind ("C-s" . swiper))
+;; Some hack to make swiper startup faster https://www.reddit.com/r/emacs/comments/cfdv1y/swiper_is_extreamly_slow/
+;; By default if you have visual line mode on swiper scans every visual line, which can be really slow in large files. This forces swiper to revert back to searching only every actual line even if the user is using visual line mode
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))
+
+(use-package mark-multiple
+  :ensure t
+  :bind ("C-c q" . 'mark-next-like-this))
+
+(use-package expand-region
+  :ensure t
+  :bind ("C-q" . 'er/expand-region))
+
+;; JavaScript mode
+    ;; Better highlighting for JS files (potential support for JSX too)
+    (use-package js2-mode
+      :ensure t
+      :interpreter ("node" . js2-mode)
+      :mode ("\\.m?jsx?\\'" . js2-mode)
+      :config (setq js2-basic-offset 2
+                    js2-indent-switch-body t
+                    js2-strict-missing-semi-warning nil
+                    js2-mode-show-strict-warnings nil))
+
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  ;; Better imenu
+  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+  (use-package prettier-js
+    :after js2-mode
+    :init
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'web-mode-hook 'prettier-js-mode)
+    :config
+    (setq prettier-js-args '("--trailing-comma" "all"
+                             "--bracket-spacing" "false"
+                             "--print-width" "200")))
+
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+(global-set-key (kbd "C-c <right>") 'hs-show-block)
+(global-set-key (kbd "C-c <left>") 'hs-hide-block)
+
+
+;; (add-hook 'js2-mode-hook
+  ;;      (lambda ()
+    ;;      (add-hook 'before-save-hook 'prettier-js nil 'make-it-local)))
+
+(use-package projectile
+    :ensure t
+    :config
+    (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+    (projectile-mode +1 ))
+
+;; Hybrid is slower than alein but use both native and git indexing
+(setq projectile-indexing-method 'hybrid)
+;; Alien is the Fastest, Where it checkes the Git for File Indexing
+(setq projectile-indexing-method 'alien)
+
+(setq projectile-git-submodule-command nil);; This is to support the Git Indexing, Without this it will fail

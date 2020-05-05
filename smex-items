@@ -18,4 +18,5 @@
  (insert-kbd-macro . 2)
  (name-last-kbd-macro . 1)
  (bullet-list . 1)
+ (prettier-js . 2)
 )

@@ -52,7 +52,10 @@
 #+END_SRC
 ** Settings
 #+BEGIN_SRC emacs-lisp
-  (tool-bar-mode -1)
+;; This is gonna speed up the keyboard scrolling - https://lists.gnu.org/archive/html/emacs-devel/2006-09/msg00814.html
+(setq auto-window-vscroll nil)  
+
+(tool-bar-mode -1)
   (menu-bar-mode -1)
   (scroll-bar-mode -1)
   (setq inhibit-startup-message t)
@@ -82,7 +85,6 @@
   (global-display-line-numbers-mode)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
-
 * Terminal
   
 #+BEGIN_SRC emacs-lisp
@@ -120,7 +122,6 @@
 (setq org-src-window-setup 'current-window)
 (add-to-list 'org-structure-template-alist 
 '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
-
 #+END_SRC
 ** Formattings
 #+BEGIN_SRC emacs-lisp
@@ -136,12 +137,15 @@
 
   ;; Key Binding
   (global-set-key (kbd "C-c I") #'my-find-user-init-file)
+
+  (add-hook 'org-mode-hook 'org-indent-mode)
+
 #+END_SRC
 
 * IDO & Smex mode
 ** Standard IDO Mode
 #+BEGIN_SRC emacs-lisp
-  (setq ido-enable-flex-matching nil)
+  (setq ido-enable-flex-matching t)
   (setq ido-create-new-buffer 'always)
   (setq ido-everywhere t)
   (ido-mode 1)
@@ -268,7 +272,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
     :ensure t
-    :init (rainbow-delimiters-mode 1))
+    :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
 * Switch-Winow
 #+BEGIN_SRC emacs-lisp
@@ -304,7 +308,11 @@
     :ensure t
     :config
     (dashboard-setup-startup-hook)
-    (setq dashboard-items '((recents . 10)))
+    (setq dashboard-items '((recents  . 5)
+                            (bookmarks . 5)
+                            (projects . 5)
+                            (agenda . 5)
+                            (registers . 5)))
     (setq dashboard-banner-logo-title "Hello World!"))
 
 #+END_SRC
@@ -313,7 +321,15 @@
   (use-package company
     :ensure t
     :init
+    (setq company-idle-delay 0)
+    (setq company-minimum-prefix-length 2)
     (add-hook 'after-init-hook 'global-company-mode))
+
+  (with-eval-after-load 'company
+    (define-key company-active-map(kbd "M-n") nil)
+    (define-key company-active-map(kbd "M-p") nil)
+    (define-key company-active-map(kbd "C-n") #'company-select-next)
+    (define-key company-active-map(kbd "C-p") #'company-select-previous))
 #+END_SRC
 * Modeline
 ** Spaceline
@@ -364,4 +380,68 @@
 (setq swiper-use-visual-line nil)
 (setq swiper-use-visual-line-p (lambda (a) nil))
 
+#+END_SRC
+* Mark Multiple
+#+BEGIN_SRC emacs-lisp
+  (use-package mark-multiple
+    :ensure t
+    :bind ("C-c q" . 'mark-next-like-this))
+#+END_SRC
+* Expang Region
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :bind ("C-q" . 'er/expand-region))
+#+END_SRC
+* Javascript stuff
+#+BEGIN_SRC emacs-lisp
+    ;; JavaScript mode
+    ;; Better highlighting for JS files (potential support for JSX too)
+    (use-package js2-mode
+      :ensure t
+      :interpreter ("node" . js2-mode)
+      :mode ("\\.m?jsx?\\'" . js2-mode)
+      :config (setq js2-basic-offset 2
+                    js2-indent-switch-body t
+                    js2-strict-missing-semi-warning nil
+                    js2-mode-show-strict-warnings nil))
+
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+  ;; Better imenu
+  (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
+
+  (use-package prettier-js
+    :after js2-mode
+    :init
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'web-mode-hook 'prettier-js-mode)
+    :config
+    (setq prettier-js-args '("--trailing-comma" "all"
+                             "--bracket-spacing" "false"
+                             "--print-width" "200")))
+
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+(global-set-key (kbd "C-c <right>") 'hs-show-block)
+(global-set-key (kbd "C-c <left>") 'hs-hide-block)
+
+
+;; (add-hook 'js2-mode-hook
+  ;;      (lambda ()
+    ;;      (add-hook 'before-save-hook 'prettier-js nil 'make-it-local)))
+
+#+END_SRC
+* Projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+    (projectile-mode +1 ))
+
+;; Hybrid is slower than alein but use both native and git indexing
+(setq projectile-indexing-method 'hybrid)
+;; Alien is the Fastest, Where it checkes the Git for File Indexing
+(setq projectile-indexing-method 'alien)
+
+(setq projectile-git-submodule-command nil);; This is to support the Git Indexing, Without this it will fail
 #+END_SRC
