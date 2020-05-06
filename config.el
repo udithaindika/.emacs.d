@@ -58,6 +58,9 @@
   (global-display-line-numbers-mode)
   (fset 'yes-or-no-p 'y-or-n-p)
 
+  (setq visible-cursor nil)
+(blink-cursor-mode  `blink-cursor-blinks)
+
 (defvar my-term-shell "/bin/bash")
 (when sys/linuxp (setq my-term-shell "/bin/bash"))
 (when sys/win32p (setq my-term-shell "C:\\Program Files\\Git\\bin\\bash.exe"))
@@ -215,6 +218,9 @@
                           (registers . 5)))
   (setq dashboard-banner-logo-title "Hello World!"))
 
+(setq dashboard-center-content t)
+(setq dashboard-set-footer nil)
+
 (use-package company
   :ensure t
   :init
@@ -318,3 +324,91 @@
 (setq projectile-indexing-method 'alien)
 
 (setq projectile-git-submodule-command nil);; This is to support the Git Indexing, Without this it will fail
+
+(use-package magit
+  :ensure t
+  :config
+  (setq magit-push-always-verify nil)
+  (setq git-commit-summary-max-length 50)
+  :bind
+  ("M-g" . magit-status))
+
+(setq vc-handled-backends nil)
+(setq magit-refresh-status-buffer nil)
+
+(use-package all-the-icons)
+
+;; https://stackoverflow.com/questions/13625080/looking-forward-a-way-to-make-cursor-blinks-like-a-heartbeat-in-emacs
+ (require 'cl)
+  (require 'color)
+
+  (defvar heartbeat-fps 16)
+  (defvar heartbeat-period 5)
+
+  (defun heartbeat-range (from to cnt)
+    (let ((step (/ (- to from) (float cnt))))
+      (loop for i below cnt collect (+ from (* step i)))))
+
+  (defun heartbeat-cursor-colors ()
+    (let ((cnt (* heartbeat-period heartbeat-fps)))
+      (mapcar (lambda (r)
+                (color-rgb-to-hex r 0 0))
+              (nconc (heartbeat-range .2 1 (/ cnt 2))
+                     (heartbeat-range 1 .2 (/ cnt 2))))))
+
+  (defvar heartbeat-cursor-timer nil)
+  (defvar heartbeat-cursor-old-color)
+
+  (define-minor-mode heartbeat-cursor-mode
+    "Change cursor color with the heartbeat effect."
+    nil "" nil
+    :global t
+    (when heartbeat-cursor-timer
+      (cancel-timer heartbeat-cursor-timer)
+      (setq heartbeat-cursor-timer nil)
+      (set-face-background 'cursor heartbeat-cursor-old-color))
+    (when heartbeat-cursor-mode
+      (setq heartbeat-cursor-old-color (face-background 'cursor)
+            heartbeat-cursor-timer
+            (run-with-timer
+             0 (/ 1 (float heartbeat-fps))
+             (lexical-let ((colors (heartbeat-cursor-colors)) tail)
+               (lambda ()
+                 (setq tail (or (cdr tail) colors))
+                 (set-face-background 'cursor (car tail))))))))
+
+(use-package async
+  :ensure t
+  :init (dired-async-mode 1))
+
+(defun rotate-windows (arg)
+  "Rotate your windows; use the prefix argument to rotate the other direction"
+  (interactive "P")
+  (if (not (> (count-windows) 1))
+      (message "You can't rotate a single window!")
+    (let* ((rotate-times (prefix-numeric-value arg))
+           (direction (if (or (< rotate-times 0) (equal arg '(4)))
+                          'reverse 'identity)))
+      (dotimes (_ (abs rotate-times))
+        (dotimes (i (- (count-windows) 1))
+          (let* ((w1 (elt (funcall direction (window-list)) i))
+                 (w2 (elt (funcall direction (window-list)) (+ i 1)))
+                 (b1 (window-buffer w1))
+                 (b2 (window-buffer w2))
+                 (s1 (window-start w1))
+                 (s2 (window-start w2))
+                 (p1 (window-point w1))
+                 (p2 (window-point w2)))
+            (set-window-buffer-start-and-point w1 b2 s2 p2)
+            (set-window-buffer-start-and-point w2 b1 s1 p1)))))))
+
+(global-set-key (kbd "C-c 1")
+                (lambda()
+                  (interactive)
+                  (rotate-windows 1)))
+
+
+(global-set-key (kbd "C-c 2")
+                (lambda()
+                  (interactive)
+                  (rotate-windows -1)))

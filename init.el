@@ -44,3 +44,14 @@
  '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 100 :width normal :foundry "outline" :family "Source Code Pro")))))
 
 
+
+(defun my-test-func ()
+  (interactive)
+(async-start
+   ;; What to do in the child process
+   (lambda ()
+     (message "This is a test")
+     (magit-status)
+   ;; What to do when it finishes
+   (lambda (result)
+     (message "Async process done, result should be 222: %s" result))))
