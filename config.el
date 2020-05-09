@@ -68,6 +68,22 @@
 
 (global-auto-revert-mode nil)
 
+;; check OS type
+(cond
+ ((string-equal system-type "windows-nt") ; Microsoft Windows
+  (progn
+    (message "Microsoft Windows")))
+ ((string-equal system-type "darwin") ; Mac OS X
+  (progn
+    (setq mac-option-key-is-meta nil)
+    (setq mac-command-key-is-meta t)
+    (setq mac-command-modifier 'meta)
+    (setq mac-option-modifier nil)
+    (message "Mac OS X")))
+ ((string-equal system-type "gnu/linux") ; linux
+  (progn
+    (message "Linux"))))
+
 (defvar my-term-shell "/bin/bash")
 (when sys/linuxp (setq my-term-shell "/bin/bash"))
 (when sys/win32p (setq my-term-shell "C:\\Program Files\\Git\\bin\\bash.exe"))
@@ -421,7 +437,7 @@
 (setq magit-refresh-status-buffer nil)
 
 (use-package all-the-icons
-:ensure t)
+  :ensure t)
 
 ;; https://stackoverflow.com/questions/13625080/looking-forward-a-way-to-make-cursor-blinks-like-a-heartbeat-in-emacs
  (require 'cl)
