@@ -58,3 +58,4 @@ smex-items
 *.lsp-*
 *.ini
 dmenu-items
+config.el
