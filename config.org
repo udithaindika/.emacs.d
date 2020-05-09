@@ -561,7 +561,8 @@
 #+END_SRC
 * All Icons
 #+BEGIN_SRC emacs-lisp
-(use-package all-the-icons)
+  (use-package all-the-icons
+    :ensure t)
 #+END_SRC
 * Curser Blink
 #+BEGIN_SRC emacs-lisp

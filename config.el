@@ -420,7 +420,8 @@
 (setq vc-handled-backends nil)
 (setq magit-refresh-status-buffer nil)
 
-(use-package all-the-icons)
+(use-package all-the-icons
+:ensure t)
 
 ;; https://stackoverflow.com/questions/13625080/looking-forward-a-way-to-make-cursor-blinks-like-a-heartbeat-in-emacs
  (require 'cl)
@@ -511,20 +512,9 @@
   :ensure t
   :mode ("\\.json" . json-mode))
 
-
 (use-package js2-refactor
   :ensure t
   :requires js2-mode)
-
-(use-package prettier-js
-  :ensure t
-  :requires js2-mode
-  :config
-  (setq prettier-js-args '("--trailing-comma" "all"
-                           "--bracket-spacing" "false"
-                           "--print-width" "200")))
-
-
 
 ;;======================== LSP Mode ====================
 

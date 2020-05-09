@@ -47,7 +47,7 @@
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (company-lsp lsp-ui lsp-mode company-tern use-package-ensure-system-package js2-refactor json-mode whole-line-or-region prettier-js js2-mode expand-region mark-multiple swiper popup-kill-ring symon dmenu spaceline dashboard rainbow-delimiters hungry-delete hugry-delete switch-window avy smex ido-vertical-mode org-bullets beacon spacemacs-theme which-key use-package paradox gotest go-projectile gnu-elpa-keyring-update flycheck exec-path-from-shell diminish company-go benchmark-init auto-package-update))))
+    (all-the-icons company-lsp lsp-ui lsp-mode company-tern use-package-ensure-system-package js2-refactor json-mode whole-line-or-region prettier-js js2-mode expand-region mark-multiple swiper popup-kill-ring symon dmenu spaceline dashboard rainbow-delimiters hungry-delete hugry-delete switch-window avy smex ido-vertical-mode org-bullets beacon spacemacs-theme which-key use-package paradox gotest go-projectile gnu-elpa-keyring-update flycheck exec-path-from-shell diminish company-go benchmark-init auto-package-update))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
