@@ -725,3 +725,23 @@
 ;;(add-hook 'elm-mode-hook (lambda () (defalias 'company-elm 'company-lsp)))
 
 #+END_SRC
+
+
+
+
+
+* EXWM
+#+BEGIN_SRC emacs-lisp
+  (when (and sys/linuxp window-system)
+    (use-package exwm
+      :when (and sys/linuxp window-system)
+      :ensure t
+      :config (require 'exwm-config)
+      (exwm-config-default))
+
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+
+    (global-set-key (kbd "s-k") 'exwm-workspace-delete)
+    (global-set-key (kbd "s-w") 'exwm-workspace-swap))
+#+END_SRC
