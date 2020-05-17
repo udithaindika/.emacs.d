@@ -4,8 +4,6 @@
 #+Credits: This Emacs Config is Based on the Uncle Dave's Tutorial
 #+Keywords : el
 
-
-
 * Constants
   
 #+BEGIN_SRC emacs-lisp
@@ -101,23 +99,10 @@
   (global-auto-revert-mode nil)
 
 #+END_SRC
-** Remap Meta/Comand keys in mac
+** Indented Correctly
 #+BEGIN_SRC emacs-lisp
-  ;; check OS type
-  (cond
-   ((string-equal system-type "windows-nt") ; Microsoft Windows
-    (progn
-      (message "Microsoft Windows")))
-   ((string-equal system-type "darwin") ; Mac OS X
-    (progn
-      (setq mac-option-key-is-meta nil)
-      (setq mac-command-key-is-meta t)
-      (setq mac-command-modifier 'meta)
-      (setq mac-option-modifier nil)
-      (message "Mac OS X")))
-   ((string-equal system-type "gnu/linux") ; linux
-    (progn
-      (message "Linux"))))
+  (use-package aggressive-indent
+      :ensure t)
 
 #+END_SRC
 * Terminal
@@ -308,6 +293,14 @@
     :bind ("M-s" . avy-goto-char))
 
 #+END_SRC
+* Smart parens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :diminish smartparens-mode
+    :config
+    (add-hook 'prog-mode-hook 'smartparens-mode))
+#+END_SRC
 * Rainbow Delimer
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
@@ -365,7 +358,7 @@
   (use-package company
     :ensure t
     :init
-    (setq company-idle-delay 0)
+    (setq company-idle-delay 0.3)
     (setq company-minimum-prefix-length 2)
     (add-hook 'after-init-hook 'global-company-mode))
 
@@ -382,7 +375,7 @@
     :ensure t
     :config
     (require 'spaceline-config)
-    (setq powerline-default-separator (quote arrow))
+    (setq powerline-default-separator 'arrow)
     (spaceline-spacemacs-theme))
 #+END_SRC
 ** Diminish
@@ -686,31 +679,49 @@
    (use-package js2-refactor
      :ensure t
      :requires js2-mode)
-
-   ;;======================== LSP Mode ====================
-
-   (use-package lsp-mode
-     :ensure t
-     :init (setq lsp-keymap-prefix "C-;")
-     :hook ((js2-mode . lsp)
-            (yaml-mode . lsp)
-            (lsp-mode . lsp-enable-which-key-integration))
-     :commands lsp lsp-deferred
-     :ensure-system-package
-     ((typescript-language-server . "npm install -g typescript-language-server")
-      (javascript-typescript-langserver . "npm install -g javascript-typescript-langserver")
-      (yaml-language-server . "npm install -g yaml-language-server")
-      (tsc . "npm install -g typescript")))
-
-   (use-package lsp-ui
-     :ensure t
-     ;; flycheck integration & higher level UI modules
-     :commands lsp-ui-mode)
-
-   (use-package company-lsp
-     :ensure t
-     ;; company-mode completion
-     :commands company-lsp
-     :config (push 'company-lsp company-backends))
-
  #+END_SRC
+
+* Elm
+#+BEGIN_SRC emacs-lisp
+  (use-package elm-mode
+    :ensure t
+    :config
+    (setq elm-format-on-save t)
+    (add-to-list 'company-backends 'company-elm)
+    :ensure-system-package
+    ((elm-format . "npm install -g elm-format")))
+#+END_SRC
+
+* LSP Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :ensure t
+    :init (setq lsp-keymap-prefix "C-;")
+    :hook ((js2-mode . lsp)
+           (yaml-mode . lsp)
+           (elm-mode . lsp)
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp lsp-deferred
+    :ensure-system-package
+    ((typescript-language-server . "npm install -g typescript-language-server")
+     (javascript-typescript-langserver . "npm install -g javascript-typescript-langserver")
+     (yaml-language-server . "npm install -g yaml-language-server")
+     (elm-language-server . "npm install -g @elm-tooling/elm-language-server")
+     (tsc . "npm install -g typescript")))
+
+  (use-package lsp-ui
+    :ensure t
+    ;; flycheck integration & higher level UI modules
+    :commands lsp-ui-mode)
+
+  (use-package company-lsp
+    :ensure t
+    ;; company-mode completion
+    :commands company-lsp
+    :config (push 'company-lsp company-backends))
+
+
+;;(defalias 'company-elm 'company-lsp)
+;;(add-hook 'elm-mode-hook (lambda () (defalias 'company-elm 'company-lsp)))
+
+#+END_SRC
