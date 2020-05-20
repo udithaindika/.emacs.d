@@ -28,8 +28,14 @@
 * Default Settings
 ** show lines and columns on the modeline
 #+BEGIN_SRC emacs-lisp
-(line-number-mode 1)
-(column-number-mode 1)
+  (line-number-mode 1)
+  (column-number-mode 1)
+  (global-display-line-numbers-mode)
+  (when window-system (global-hl-line-mode t))
+
+  ;; Following lines enable the relative number - But that might not be very usefull in emacs, instead use the Avy go to line -
+  ;;(display-line-numbers-mode)  
+  ;;(setq display-line-numbers 'relative)
 #+END_SRC
 
 ** Subword
@@ -87,10 +93,10 @@
   (setq create-lockfiles nil)  ; stop creating .# files
 
 
-  (when window-system (global-hl-line-mode t))
+
   (when window-system (global-prettify-symbols-mode t))
 
-  (global-display-line-numbers-mode)
+
   (fset 'yes-or-no-p 'y-or-n-p)
 
   (setq visible-cursor nil)
@@ -290,7 +296,9 @@
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
-    :bind ("M-s" . avy-goto-char))
+    :bind 
+    ("M-s" . avy-goto-char)
+    ("C-c l" . avy-goto-line ))
 
 #+END_SRC
 * Smart parens
@@ -725,11 +733,6 @@
 ;;(add-hook 'elm-mode-hook (lambda () (defalias 'company-elm 'company-lsp)))
 
 #+END_SRC
-
-
-
-
-
 * EXWM
 #+BEGIN_SRC emacs-lisp
   (when (and sys/linuxp window-system)
@@ -745,3 +748,4 @@
     (global-set-key (kbd "s-k") 'exwm-workspace-delete)
     (global-set-key (kbd "s-w") 'exwm-workspace-swap))
 #+END_SRC
+
