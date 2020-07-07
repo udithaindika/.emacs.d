@@ -59,3 +59,6 @@ smex-items
 *.ini
 dmenu-items
 config.el
+.dap-breakpoints
+.extension/
+company-statistics-cache.el

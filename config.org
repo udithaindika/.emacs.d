@@ -33,7 +33,7 @@
   (global-display-line-numbers-mode)
   (when window-system (global-hl-line-mode t))
 
-  ;; Following lines enable the relative number - But that might not be very usefull in emacs, instead use the Avy go to line -
+  ;; Following lines enable the relative number - But that might not be very usefull in emacs, instead use the Avy go to line 
   ;;(display-line-numbers-mode)  
   ;;(setq display-line-numbers 'relative)
 #+END_SRC
@@ -138,6 +138,15 @@
 	 (message "Windows preferences set."))
 
   (if sys/win32p (my-windows-shell-setup))
+
+
+(defun powershell (&optional buffer)
+  "Launches a powershell in buffer *powershell* and switches to it."
+  (interactive)
+  (let ((buffer (or buffer "*powershell*"))
+    (powershell-prog "c:\\windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe"))
+    (make-comint-in-buffer "shell" "*powershell*" powershell-prog)
+    (switch-to-buffer buffer)))
 
 
 #+END_SRC
@@ -257,6 +266,43 @@
     :ensure t
     :config (whole-line-or-region-global-mode 1))
 #+END_SRC
+**  Jump to Next Workd
+#+BEGIN_SRC emacs-lisp
+
+  (defun get-point (symbol &optional arg)
+    "get the point"
+    (funcall symbol arg)
+    (point))
+
+  (defun get-word-from-to (begin-of-thing end-of-thing &optional arg)
+    "Return thing between beg & end "
+    (save-excursion
+      (let ((beg (get-point begin-of-thing 1))
+            (end (get-point end-of-thing arg)))
+        (buffer-substring beg end))))
+
+  (defun get-word-at-cursor (&optional arg)
+    "Get word at point"
+    (interactive "P")
+    (get-word-from-to 'backward-word-strictly 'forward-word-strictly arg))
+
+  (defun jump-to-next-occurence (&optional arg)
+    "Jump to the next occurence of the word where the cursor is at"
+    (interactive "P")
+    (let ((word-at-cursor (get-word-at-cursor)))
+      (search-forward word-at-cursor)))
+
+  (defun jump-to-previous-occurence (&optional arg)
+    "Jump to the next occurence of the word where the cursor is at"
+    (interactive "P")
+    (let ((word-at-cursor (get-word-at-cursor)))
+      (search-backward word-at-cursor)))
+
+
+  (global-set-key (kbd "C-c n") 'jump-to-next-occurence)
+  (global-set-key (kbd "C-c N") 'jump-to-previous-occurence)
+#+END_SRC
+
 * Cofig edit/reload
 #+BEGIN_SRC emacs-lisp
   (defun config-visit ()
@@ -375,6 +421,26 @@
     (define-key company-active-map(kbd "M-p") nil)
     (define-key company-active-map(kbd "C-n") #'company-select-next)
     (define-key company-active-map(kbd "C-p") #'company-select-previous))
+
+  (use-package company-statistics
+      :ensure t
+      :init
+      (company-statistics-mode))
+
+  (use-package company-web
+      :ensure t)
+
+  (use-package company-try-hard
+      :ensure t
+      :bind
+      (("C-<tab>" . company-try-hard)
+       :map company-active-map
+       ("C-<tab>" . company-try-hard)))
+
+  (use-package company-quickhelp
+      :ensure t
+      :config
+      (company-quickhelp-mode))
 #+END_SRC
 * Modeline
 ** Spaceline
@@ -440,8 +506,6 @@
 #+END_SRC
 * Javascript stuff
 #+BEGIN_SRC emacs-lisp
-
-  (setq test 1)
     ;; JavaScript mode
     ;; Better highlighting for JS files (potential support for JSX too)
     ;; (use-package js2-mode
@@ -534,6 +598,17 @@
   ;;   :commands company-lsp)
   ;;
   ;; (push 'company-lsp company-backends)
+
+     (use-package prettier-js
+       :after js2-mode
+       :init
+       (add-hook 'js2-mode-hook 'prettier-js-mode)
+       (add-hook 'web-mode-hook 'prettier-js-mode)
+       :config
+       (setq prettier-js-args '("--trailing-comma" "all"
+                                "--bracket-spacing" "false"
+                                "--print-width" "200")))
+
 #+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp
@@ -669,6 +744,7 @@
 
 #+END_SRC
 * Javascript experiment
+** Dev Setup
  #+BEGIN_SRC emacs-lisp
    (use-package js2-mode
      :ensure t
@@ -688,6 +764,18 @@
      :ensure t
      :requires js2-mode)
  #+END_SRC
+** Utils
+#+BEGIN_SRC emacs-lisp
+  ;; Run C programs directly from within emacs
+  (defun execute-node-script ()
+    (interactive)
+    (defvar run-command)
+    (setq run-command (concat "node " buffer-file-name))
+    (async-shell-command run-command))
+
+  (global-set-key (kbd "C-c v") 'execute-node-script)
+
+#+END_SRC
 
 * Elm
 #+BEGIN_SRC emacs-lisp
@@ -728,9 +816,12 @@
     :commands company-lsp
     :config (push 'company-lsp company-backends))
 
+  (setq lsp-ui-doc-alignment 'window) ;;lsp-ui code lens overlay position
+  (global-set-key (kbd "C-c j") 'js2-jump-to-definition)
+  (global-set-key (kbd "C-c b") 'pop-tag-mark )
 
-;;(defalias 'company-elm 'company-lsp)
-;;(add-hook 'elm-mode-hook (lambda () (defalias 'company-elm 'company-lsp)))
+  ;;(defalias 'company-elm 'company-lsp)
+  ;;(add-hook 'elm-mode-hook (lambda () (defalias 'company-elm 'company-lsp)))
 
 #+END_SRC
 * EXWM
@@ -748,4 +839,62 @@
     (global-set-key (kbd "s-k") 'exwm-workspace-delete)
     (global-set-key (kbd "s-w") 'exwm-workspace-swap))
 #+END_SRC
+* Dap Mode for Emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package dap-mode
+    :ensure t
+    :config
+    (setq dap-mode t)
+    (setq dap-ui-mode t)
+    ;; enables mouse hover support
+    (setq dap-tooltip-mode t)
+    ;; use tooltips for mouse hover
+    ;; if it is not enabled `dap-mode' will use the minibuffer.
+    (setq tooltip-mode t)
+    (require 'dap-node))
+#+END_SRC
+* Python
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+      :ensure t
+      :bind
+      (:map elpy-mode-map
+            ("C-M-n" . elpy-nav-forward-block)
+            ("C-M-p" . elpy-nav-backward-block))
+      :hook ((elpy-mode . flycheck-mode)
+             (elpy-mode . (lambda ()
+                            (set (make-local-variable 'company-backends)
+                                 '((elpy-company-backend :with company-yasnippet))))))
+      :init 
+      (elpy-enable)
+      :config
+      (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+      ; fix for MacOS, see https://github.com/jorgenschaefer/elpy/issues/1550
+      (setq elpy-shell-echo-output nil)
+      (setq elpy-rpc-python-command "python2")
+      (setq elpy-rpc-timeout 2))
 
+
+(setq PyProc (start-process "python" "*Python*" "python" "-i"))
+(process-send-string PyProc "1+1;\n")
+
+
+;; This seems useful consider using this setup
+;; https://wfbroderick.com/2019-Jan-01.html
+
+#+END_SRC
+* Tab out
+#+BEGIN_SRC emacs-lisp
+
+;; Based on https://www.reddit.com/r/emacs/comments/3n1j4x/anyway_to_tab_out_of_parentheses/
+;; Try the Xah's solutions later, seems that is more suitable. but this is more simple
+(defun eide-smart-tab-jump-out-or-indent (&optional arg)
+    "Smart tab behavior. Jump out quote or brackets, or indent."
+    (interactive "P")
+    (if (-contains? (list "\"" "'" ")" "}" ";" "|" ">" "]" ) (make-string 1 (char-after)))
+        (forward-char 1)
+      (indent-for-tab-command arg)))
+
+  (global-set-key [remap indent-for-tab-command]
+                  'eide-smart-tab-jump-out-or-indent)
+#+END_SRC
