@@ -383,7 +383,7 @@ The theme is great, really, but some of the concepts just suck with powerline.
     :ensure t
     :config (whole-line-or-region-global-mode 1))
 #+END_SRC
-**  Jump to Next Workd
+** Jump to Next Workd
 #+BEGIN_SRC emacs-lisp
 
   (defun get-point (symbol &optional arg)
@@ -419,6 +419,33 @@ The theme is great, really, but some of the concepts just suck with powerline.
   (global-set-key (kbd "C-c n") 'jump-to-next-occurence)
   (global-set-key (kbd "C-c N") 'jump-to-previous-occurence)
 #+END_SRC
+
+** Logout/kill current User on EXWM
+
+#+BEGIN_SRC emacs-lisp
+(defun exwm-logout()
+  "Tidies the HTML content in the buffer using `tidy'"
+  (interactive)
+  (shell-command-on-region
+   ;; beginning and end of buffer
+   (point-min)
+   (point-max)
+   ;; command and parameters
+   "killall -u $USER"
+   ;; output buffer
+   (current-buffer)
+   ;; replace?
+   t
+   ;; name of the error buffer
+   "*Tidy Error Buffer*"
+   ;; show error buffer?
+   t))
+
+
+
+#+END_SRC
+
+
 
 * Cofig edit/reload
 #+BEGIN_SRC emacs-lisp
