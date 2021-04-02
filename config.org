@@ -1,4 +1,4 @@
-#+TITLE: My Emacs Config File
+w#+TITLE: My Emacs Config File
 #+CREATOR: U<
 #+STARTUP: overview
 #+Credits: This Emacs Config is Based on the Uncle Dave's Tutorial
@@ -423,30 +423,26 @@ The theme is great, really, but some of the concepts just suck with powerline.
 ** Logout/kill current User on EXWM
 
 #+BEGIN_SRC emacs-lisp
-(defun exwm-logout()
-  "Tidies the HTML content in the buffer using `tidy'"
-  (interactive)
-  (shell-command-on-region
-   ;; beginning and end of buffer
-   (point-min)
-   (point-max)
-   ;; command and parameters
-   "killall -u $USER"
-   ;; output buffer
-   (current-buffer)
-   ;; replace?
-   t
-   ;; name of the error buffer
-   "*Tidy Error Buffer*"
-   ;; show error buffer?
-   t))
-
-
+  (when (and sys/linuxp window-system)
+  (defun exwm-logout()
+    "Tidies the HTML content in the buffer using `tidy'"
+    (interactive)
+    (shell-command-on-region
+     ;; beginning and end of buffer
+     (point-min)
+     (point-max)
+     ;; command and parameters
+     "killall -u $USER"
+     ;; output buffer
+     (current-buffer)
+     ;; replace?
+     t
+     ;; name of the error buffer
+     "*Tidy Error Buffer*"
+     ;; show error buffer?
+     t)))
 
 #+END_SRC
-
-
-
 * Cofig edit/reload
 #+BEGIN_SRC emacs-lisp
   (defun config-visit ()
@@ -828,14 +824,7 @@ The theme is great, really, but some of the concepts just suck with powerline.
       ;; this is a nifty way to go back from char mode to line mode without using the mouse
       (exwm-input-set-key (kbd "s-r") #'exwm-reset)
       (exwm-input-set-key (kbd "s-k") #'exwm-workspace-delete)
-      (exwm-input-set-key (kbd "s-w") #'exwm-workspace-swap)
 
-      ;; the next loop will bind s-<number> to switch to the corresponding workspace
-      (dotimes (i 10)
-        (exwm-input-set-key (kbd (format "s-%d" i))
-                            `(lambda ()
-                               (interactive)
-                               (exwm-workspace-switch-create ,i))))
 
       ;; the simplest launcher, I keep it in only if dmenu eventually stopped working or something
       (exwm-input-set-key (kbd "s-&")
