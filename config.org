@@ -893,3 +893,9 @@ The theme is great, really, but some of the concepts just suck with powerline.
   (global-set-key [remap indent-for-tab-command]
                   'eide-smart-tab-jump-out-or-indent)
 #+END_SRC
+* Mac Specific
+#+BEGIN_SRC emacs-lisp
+  (when sys/macp 
+    (setq mac-command-modifier 'meta)
+    (setq ns-function-modifier 'control))
+#+END_SRC
