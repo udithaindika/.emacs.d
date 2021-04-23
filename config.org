@@ -221,6 +221,7 @@ The theme is great, really, but some of the concepts just suck with powerline.
 
   (global-auto-revert-mode nil)
 
+
 #+END_SRC
 ** Indented Correctly
 #+BEGIN_SRC emacs-lisp
