@@ -1,4 +1,4 @@
-w#+TITLE: My Emacs Config File
+#+TITLE: My Emacs Config File
 #+CREATOR: U<
 #+STARTUP: overview
 #+Credits: This Emacs Config is Based on the Uncle Dave's Tutorial
