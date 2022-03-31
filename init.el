@@ -38,7 +38,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(go-mode memory-usage projectile company-quickhelp company-try-hard company-web company-statistics elpy dap-mode exwm elm-mode aggressive-indent smartparens all-the-icons company-lsp lsp-ui lsp-mode company-tern use-package-ensure-system-package js2-refactor json-mode whole-line-or-region prettier-js js2-mode expand-region mark-multiple swiper popup-kill-ring symon dmenu spaceline dashboard rainbow-delimiters hungry-delete hugry-delete switch-window avy smex ido-vertical-mode org-bullets beacon spacemacs-theme which-key use-package paradox gotest go-projectile gnu-elpa-keyring-update flycheck exec-path-from-shell diminish company-go benchmark-init auto-package-update))
+   '(cider go-mode memory-usage projectile company-quickhelp company-try-hard company-web company-statistics elpy dap-mode exwm elm-mode aggressive-indent smartparens all-the-icons company-lsp lsp-ui lsp-mode company-tern use-package-ensure-system-package js2-refactor json-mode whole-line-or-region prettier-js js2-mode expand-region mark-multiple swiper popup-kill-ring symon dmenu spaceline dashboard rainbow-delimiters hungry-delete hugry-delete switch-window avy smex ido-vertical-mode org-bullets beacon spacemacs-theme which-key use-package paradox gotest go-projectile gnu-elpa-keyring-update flycheck exec-path-from-shell diminish company-go benchmark-init auto-package-update))
  '(symon-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

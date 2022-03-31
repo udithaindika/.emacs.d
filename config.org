@@ -900,3 +900,9 @@ The theme is great, really, but some of the concepts just suck with powerline.
     (setq mac-command-modifier 'meta)
     (setq ns-function-modifier 'control))
 #+END_SRC
+
+* Clojure Setup
+#+BEGIN_SRC emacs-lisp
+  (use-package cider
+    :ensure t)
+#+END_SRC
