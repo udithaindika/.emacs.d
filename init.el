@@ -11,7 +11,7 @@
 (setq gc-cons-threshold (* 500 1024 1024)
       gc-cons-percentage 0.6
       ;; gc-cons-threshold (* 1024 1024 1024) ;1G
-      jit-lock-stealth-time 0.1
+jit-lock-stealth-time 0.1
       jit-lock-chunk-size 100
       jit-lock-defer-time 0.1)
 ;; Garbage collector - decrease threshold to 5 MB after startup
@@ -37,14 +37,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(exec-path
+   '("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_14" "/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_14" "/Applications/Emacs.app/Contents/MacOS/libexec" "/Applications/Emacs.app/Contents/MacOS/bin" "/usr/local/bin"))
  '(package-selected-packages
    '(cider go-mode memory-usage projectile company-quickhelp company-try-hard company-web company-statistics elpy dap-mode exwm elm-mode aggressive-indent smartparens all-the-icons company-lsp lsp-ui lsp-mode company-tern use-package-ensure-system-package js2-refactor json-mode whole-line-or-region prettier-js js2-mode expand-region mark-multiple swiper popup-kill-ring symon dmenu spaceline dashboard rainbow-delimiters hungry-delete hugry-delete switch-window avy smex ido-vertical-mode org-bullets beacon spacemacs-theme which-key use-package paradox gotest go-projectile gnu-elpa-keyring-update flycheck exec-path-from-shell diminish company-go benchmark-init auto-package-update))
  '(symon-mode nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :extend nil :stipple nil :background "#282c34" :foreground "#abb2bf" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 130 :width normal :foundry "ADBO" :family "Source Code Pro"))))
- '(hl-line ((t (:inherit nil :extend t :background "#2c323b" :height 130 :width normal)))))
+
 (put 'list-timers 'disabled nil)
+
+(set-frame-font "Source Code Pro 15" nil t)
